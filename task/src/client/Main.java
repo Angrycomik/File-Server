@@ -10,6 +10,7 @@ public class Main {
 
     enum Request{GET, PUT, DELETE}
 
+    static FileClientService fileService = new FileClientService(ADDRESS, PORT);
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -25,7 +26,7 @@ public class Main {
             case "1" -> get(idOrName());
             case "2" -> add();
             case "3" -> remove(idOrName());
-            case "exit" -> sendExitRequest();
+            case "exit" -> fileService.sendExitRequest();
             default -> System.out.println("Invalid input");
         }
     }
@@ -49,34 +50,6 @@ public class Main {
             return null;
         }
     }
-    static String sendFileToServer(String method, String localFilename,String serverFilename) {
-        try (Socket socket = new Socket(InetAddress.getByName(ADDRESS), PORT);
-             DataInputStream input = new DataInputStream(socket.getInputStream());
-             DataOutputStream output = new DataOutputStream(socket.getOutputStream())
-        ){
-            output.writeUTF(method + " " + serverFilename);
-            System.out.println("The request was sent");
-            switch (method) {
-                case "PUT"->{
-                    try{
-                        byte[] bytes = FileHandler.getFileContent(localFilename);
-                        output.writeInt(bytes.length);
-                        output.write(bytes);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                case "GET"-> {
-
-                }
-            }
-
-            return input.readUTF();
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     private static void askForANameAndSave(byte[] bytes) throws IOException {
         System.out.println("The file was downloaded! Specify a name for it: ");
@@ -85,27 +58,18 @@ public class Main {
         System.out.println("File saved on the hard drive!");
     }
 
-    static void sendExitRequest(){
-        try (Socket socket = new Socket(InetAddress.getByName(ADDRESS), PORT);
-             DataOutputStream output = new DataOutputStream(socket.getOutputStream())
-        ){
-            System.out.println("The request was sent");
-            output.writeUTF("exit");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
     static void add(){
         System.out.println("Enter name of the file: ");
         String localFilename = scanner.nextLine();
         System.out.println("Enter name of the file to be saved on server: ");
         String serverFilename = scanner.nextLine();
 
-        String response = sendFileToServer(Request.PUT.name(), localFilename, serverFilename);
-        if(response != null && response.startsWith("200")) {
-            System.out.println("Response says that file is saved! ID = " + response.split(" ")[1] );
-        }else{
+        try {
+            String newId = fileService.addFile(localFilename, serverFilename);
+
+            System.out.println("Response says that file is saved! ID = " + newId);
+
+        } catch (Exception e) {
             System.out.println("The response says that creating the file was forbidden!");
         }
     }
