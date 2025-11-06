@@ -5,15 +5,4 @@
 /task/test/*
 /task/build/tmp/test/*
 /lesson-info.yaml
-/Save a text file/task.html
-/Save anything/task.html
-/Storage emulator/task.html
-/Networking/task-info.yaml
-/Save a text file/task-info.yaml
-/Save anything/task-info.yaml
-/Storage emulator/task-info.yaml
-/Networking/task-remote-info.yaml
-/Save a text file/task-remote-info.yaml
-/Save anything/task-remote-info.yaml
-/Storage emulator/task-remote-info.yaml
-/Networking/task.html
+.idea/*
