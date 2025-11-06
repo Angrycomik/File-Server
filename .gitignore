@@ -6,3 +6,4 @@
 /task/build/tmp/test/*
 /lesson-info.yaml
 .idea/*
+/task/filelist.data
