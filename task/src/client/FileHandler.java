@@ -5,11 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class FileHandler {
-//        static Path root = Path.of(
-//            System.getProperty("user.dir"),
-//            "File Server","task","src", "client", "data"
-//    );
-    static Path root = Path.of(
+        static Path root = Path.of(
             System.getProperty("user.dir"),
             "src", "client", "data"
     );

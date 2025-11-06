@@ -7,6 +7,10 @@ import java.net.Socket;
 import java.util.Random;
 
 public class RequestHandler {
+    public static final String STATUS_OK = "200";
+    public static final String STATUS_NOT_FOUND = "404";
+    public static final String STATUS_FORBIDDEN = "403";
+
     static String handleDelete(String method, String nameOrId) {
         try{
             switch(method) {
@@ -21,24 +25,24 @@ public class RequestHandler {
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + method);
             }
-            return "200";
+            return STATUS_OK;
         }catch (Exception e){
             e.printStackTrace();
-            return "404";
+            return STATUS_NOT_FOUND;
         }
     }
 
     static String handlePut(Socket socket, String[] arr) {
         String name = arr.length == 1 ? randomName() : arr[1];
-        if(FileHandler.isFileExist(name)){return "403";}
+        if(FileHandler.isFileExist(name)){return STATUS_FORBIDDEN;}
 
         try{
             FileHandler.createFile(name, getBytes(socket));
             int id = FileIds.addFileID(name);
-            return "200 " + id;
+            return STATUS_OK + " " + id;
         }catch (Exception e) {
             e.printStackTrace();
-            return "403";
+            return STATUS_FORBIDDEN;
         }
     }
 
@@ -50,10 +54,10 @@ public class RequestHandler {
                 default -> throw new IllegalStateException("Unexpected value: " + method);
             };
 
-            return "200 " + data;
+            return STATUS_OK + " " + data;
         }catch (Exception e) {
             e.printStackTrace();
-            return "404";
+            return STATUS_NOT_FOUND;
         }
     }
 

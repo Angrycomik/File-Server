@@ -23,11 +23,7 @@ public class Main {
                 session.start();
             }
         }catch(SocketException e){
-            try{
-                SerializationUtils.serialize(FileIds.synchronizedNumbers,"filelist.data");
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
+
         }catch (Exception e){
             e.printStackTrace();
         }

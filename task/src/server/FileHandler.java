@@ -9,10 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileHandler {
-//    static Path root = Path.of(
-//            System.getProperty("user.dir"),
-//            "File Server","task","src", "server", "data"
-//    );
     static Path root = Path.of(
             System.getProperty("user.dir"),
             "src", "server", "data"
