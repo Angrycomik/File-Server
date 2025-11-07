@@ -14,7 +14,7 @@ public class FileIds implements Serializable
     static Map<Integer, String> idToNameMap;
     static AtomicInteger idCounter;
 
-    public static Integer addFileID(String filename)
+    public static synchronized Integer addFileID(String filename)
     {
         Integer id = idCounter.getAndIncrement();
         idToNameMap.put(id, filename);
@@ -22,13 +22,9 @@ public class FileIds implements Serializable
         return id;
     }
 
-    public static void removeFileByName(String filename)
+    public static synchronized  void removeFileByName(String filename)
     {
-        for (Map.Entry<Integer, String> item : idToNameMap.entrySet()) {
-            if (item.getValue().equals(filename) ) {
-                idToNameMap.remove(item.getKey());
-            }
-        }
+        idToNameMap.entrySet().removeIf(entry -> entry.getValue().equals(filename));
         saveState();
     }
 
@@ -36,7 +32,7 @@ public class FileIds implements Serializable
         return idToNameMap.get(id);
     }
 
-    public static void removeFileById(Integer id)
+    public static synchronized void removeFileById(Integer id)
     {
         if(idToNameMap.remove(id) != null){
             saveState();
@@ -49,15 +45,12 @@ public class FileIds implements Serializable
         return idToNameMap.get(Integer.parseInt(id));
     }
 
-    private static Integer createID()
-    {
-        return idCounter.getAndIncrement();
-    }
-
     static void init(){
         if(Files.exists(Path.of("filelist.data"))){
             try{
-                idToNameMap = (Map<Integer, String>) SerializationUtils.deserialize("filelist.data");
+                @SuppressWarnings("unchecked")
+                Map<Integer, String> loadedMap = (Map<Integer, String>) SerializationUtils.deserialize("filelist.data");
+                idToNameMap = Collections.synchronizedMap(loadedMap);
             }catch(Exception e){
                 e.printStackTrace();
             }
@@ -67,11 +60,13 @@ public class FileIds implements Serializable
 
         int nextId = 0;
 
-        if (!idToNameMap.isEmpty()) {
-            try {
-                nextId = Collections.max(idToNameMap.keySet()) + 1;
-            } catch (Exception e) {
-                nextId = 0;
+        synchronized (idToNameMap) {
+            if (!idToNameMap.isEmpty()) {
+                try {
+                    nextId = Collections.max(idToNameMap.keySet()) + 1;
+                } catch (Exception e) {
+                    nextId = 0;
+                }
             }
         }
 
